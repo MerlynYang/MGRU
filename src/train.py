@@ -34,11 +34,12 @@ class experiment():
         self.args = args
         self.device = self.args['device']
         # set model
-        if self.args['rnn_type'] == 'RNN' or self.args['rnn_type'] == 'GRU' or self.args['rnn_type'] == 'LSTM':
+        if self.args['rnn_type'] == 'GRU' or self.args['rnn_type'] == 'LSTM':
             self.model = models.RNNModel(args['rnn_type'], args['input_size'], args['hidden_size'], args['output_size'], args['arch_type'], args['device'], args['dropout']).to(self.device)
         elif self.args['rnn_type'] == 'MGRUF' or self.args['rnn_type'] == 'MLSTMF':
             self.model = models.MRNNFModel(args['rnn_type'], args['input_size'], args['hidden_size'], args['output_size'], args['lag_k'], args['arch_type'], args['device'], args['dropout']).to(self.device)
         elif self.args['rnn_type'] == 'MGRU' or self.args['rnn_type'] == 'MLSTM':
+            # leave for future
             pass
 
         self.criterion = torch.nn.MSELoss()
@@ -278,7 +279,10 @@ if __name__ == '__main__':
     dropout_list = [0.0]
     lr_list = [0.001]
     hidden_list = [128, 256, 384, 512, 768]
-    lag_k_list = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    if args.rnn_type == 'GRU' or args.rnn_type == 'LSTM':
+        lag_k_list = [0]
+    elif args.rnn_type == 'MGRUF' or args.rnn_type == 'MLSTMF':
+        lag_k_list = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
     # set possible experiment manager
     hyper_param_list = {

@@ -1,2 +1,5 @@
 .DS_Store
 */.DS_Store
+data/5mins_data/*.csv
+data/daily_data/*.csv
+*.pdf

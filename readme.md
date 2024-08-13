@@ -7,9 +7,17 @@ This repository contains the pre-release version of the data and Python code use
 python==3.11.5
 numpy==1.23.5
 pandas==2.0.3
-scipy==1.14.0
+scipy==1.10.1
 statsmodels==0.14.1
 torch==2.0.1
+baostock==0.8.9
+seaborn==0.12.2
+matplotlib==3.7.2
+```
+
+Readers can use the following command to install the required packages:
+```bash
+pip install -r requirements.txt
 ```
 
 <!-- ##  Modules
@@ -52,17 +60,23 @@ torch==2.0.1
 
 ##  Usage
 ### data
+To download and process the raw data (5-minute high-frequency intraday data), follow these steps:
 * Run `get_data.ipynb` to download the data.
 * Run `data_preprocess.ipynb` to clean and preprocess the data. This notebook also includes some basic descriptive analysis.
 
-*Note: Processed data is available in the `data/realized_volatility/` folder, which includes `log_rv_table`, `rv_table`, and `return_table` containing logarithmic realized volatility, realized volatility, and stock returns for each stock during the sample period.*
+*Note: Processed data is available in the `data/realized_volatility/` folder. This includes the `log_rv_table.csv` (processed logarithmic realized volatility) and the `rv_table.csv` (raw realized volatility calculated directly from high-frequency data). Stock returns (raw data) for each stock during the sample period are stored in the `data` folder and named `return_table.csv`.*
 
 ### training
-To reproduce the paper’s results, run the following command, adjusting `forecast_horizon` and `rnn_type` as necessary:
+To reproduce the results from the paper, start by training the model using the `src/train.py` script. The generated forecasts will be saved in the `results/forecasts` directory.
+
+For example, to generate a one-step ahead forecast ($h=1$) using the **MGRUF** model, use the following command:
+
 ```python
 python src/train.py --forecast_horizon 1 --rnn_type MGRUF
 ```
-*Note: The training process may take some time. To save progress, forecasts for each model are stored in the `results/forecasts` folder, with filenames formatted as `{model_name}_h_{forecast_horizon}`.*
+You can modify the `forecast_horizon` and `rnn_type` parameters to produce forecasts for different models and forecast horizons.
+
+*Note: This training process can be time-consuming. To save the time of readers, the forecasts used in our empirical analysis are saved in the `results/forecasts` folder. Each file is named using the format `{model_name}_h_{forecast_horizon}`.*
 
 ### evaluation
 * Run `cal_metrics.ipynb` to assess the statistical performance of the forecasts.
@@ -71,13 +85,13 @@ python src/train.py --forecast_horizon 1 --rnn_type MGRUF
 ### simulation
 To demonstrate the finite performance of MGRU, we conduct simulations using both long memory (ARFIMA process) and short memory (ARMA process) datasets. For detailed information, please refer to the appendix of the paper.
 
-* To evaluate the estiamted long memory parameter $d$, please run this command:
+* To evaluate the estimated long memory parameter $d$ across different data-generating processes (DGPs) and sample sizes ($T$), use the following command. For `DGP` parameter, `arfima` represents an ARFIMA(1, d, 1) process, while `fi` stands for ARFIMA(0, d, 0):
 ```python
-python src/arfima_smi.py --d 0.1 --T 500
+python src/simulation_ARFIMA.py --d 0.1 --T 500 --DGP arfima
 ```
-* To compare the performance of MGRU with GRU on short memory dataset, please run this command:
+* To compare the performance of MGRUF with GRU on short memory DGPs, use the following command. In this context, `arma` represents an ARMA(1, 1) process, and `ar` stands for an AR(1) process:
 ```python
-python src/arfima_smi.py --arma arma --T 2000 --model MGRUF
+python src/simulation_ARMA.py --DGP arma --T 2000 --model MGRUF
 ```
 
 ### sentiment analysis

@@ -1,5 +1,7 @@
 # We use the lassovar package to estimate the VAR model with lasso regularization.
 rm(list=ls())
+# please make sure have installed the require packages
+# package 'lassovar' can be found in https://github.com/lcallot/lassovar
 
 library(lassovar)
 library(doParallel)
@@ -65,7 +67,7 @@ clusterSetRNGStream(cl, 0) #set seed
 registerDoParallel(cl)
 
 foreach(forecast_horizon = c(1, 5, 22), .packages='lassovar') %dopar% {
-    get_forecast(forecast_horizon, p)
+    get_forecast(forecast_horizon, 5)
     print('finished')
 }
 

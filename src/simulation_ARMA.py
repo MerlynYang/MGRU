@@ -81,7 +81,7 @@ def train(model_name, data):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--arma', type=str, default='arma')
+    parser.add_argument('--DGP', type=str, default='arma')
     parser.add_argument('--T', type=int, default=2000)
     parser.add_argument('--model', type=str, default='MGRUF')
 
@@ -89,10 +89,10 @@ if __name__ == '__main__':
     
     replication = 100
 
-    if args.arma == 'arma':
+    if args.DGP == 'arma':
         ar = [0.2]
         ma = [0.2]
-    elif args.arma == 'ar':
+    elif args.DGP == 'ar':
         ar = [0.6]
         ma = [0]
     else:
@@ -119,5 +119,8 @@ if __name__ == '__main__':
         RMSE, MAE = train(rnn, data)
         result_df.loc[r, f'{rnn}_RMSE'] = RMSE
         result_df.loc[r, f'{rnn}_MAE'] = MAE
+    
+    print(f'RMSE : min = {result_df[f"{rnn}_RMSE"].min():.3f}, mean = {result_df[f"{rnn}_RMSE"].mean():.3f}, std = {result_df[f"{rnn}_RMSE"].std():.3f}')
+    print(f'MAE : min = {result_df[f"{rnn}_MAE"].min():.3f}, mean = {result_df[f"{rnn}_MAE"].mean():.3f}, std = {result_df[f"{rnn}_MAE"].std():.3f}')
 
-    result_df.to_csv(f'results/simulations/{args.model}_{args.T}_{args.arma}.csv')
+    result_df.to_csv(f'results/simulations/ARMA_{args.DGP}_{args.T}_{args.model}.csv')

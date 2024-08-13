@@ -65,7 +65,8 @@ def simulation(d:float, T:int, ar:list, ma:list):
     print(f'd = {d}, T = {T}, AR = {ar}, MA = {ma}, d_hat_mean = {np.mean(d_hat_list)},  bias = {d - np.mean(d_hat_list)}, std_d_hat = {np.std(d_hat_list)}')
     d_df = pd.DataFrame()
     d_df[f'd={d}'] = d_hat_list
-    d_df.to_csv(f'results/simulations/T_{T}_ar_{ar[0]}_ma_{ma[0]}_d_{d}.csv')
+    model_type = 'fi' if ar[0] == 0 and ma[0] == 0 else 'arfima'
+    d_df.to_csv(f'results/simulations/ARFIMA_{model_type}_{T}_{d}.csv')
     
     return d_hat_list
 
@@ -73,8 +74,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--d', type=float, default=0.1)
     parser.add_argument('--T', type=int, default=500)
+    # arfima refer to ARFIMA(1, d, 1), fi refer to ARFIMA(0, d, 0)
+    parser.add_argument('--DGP', type=str, default='arfima')
 
     args = parser.parse_args()
+    
+    if args.DGP == 'arfima':
+        ar = [0.2]
+        ma = [0.2]
+    elif args.DGP == 'fi':
+        ar = [0]
+        ma = [0]
 
-    # specify the AR and MA parameters
-    simulation(args.d, args.T, [0.7], [0.5])
+    simulation(args.d, args.T, ar, ma)
